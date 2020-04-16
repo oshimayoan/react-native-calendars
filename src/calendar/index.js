@@ -13,6 +13,7 @@ import MultiPeriodDay from './day/multi-period';
 import SingleDay from './day/custom';
 import CalendarHeader from './header';
 import MonthList from './month';
+import YearList from './year';
 import shouldComponentUpdate from './updater';
 import {SELECT_DATE_SLOT} from '../testIDs';
 
@@ -94,6 +95,7 @@ class Calendar extends Component {
     this.style = styleConstructor(this.props.theme);
     this.state = {
       currentMonth: props.current ? parseDate(props.current) : XDate(),
+      // mode is enum of 'date' | 'month' | 'year'
       mode: 'date'
     };
 
@@ -103,6 +105,7 @@ class Calendar extends Component {
     this.longPressDay = this.longPressDay.bind(this);
     this.pressHeader = this.pressHeader.bind(this);
     this.pressMonth = this.pressMonth.bind(this);
+    this.pressYear = this.pressYear.bind(this);
     this.shouldComponentUpdate = shouldComponentUpdate;
   }
 
@@ -142,6 +145,7 @@ class Calendar extends Component {
 
   pressDay(date) {
     this._handleDayInteraction(date, this.props.onDayPress);
+    this.setState({currentMonth: parseDate(date)});
   }
 
   longPressDay(date) {
@@ -153,13 +157,24 @@ class Calendar extends Component {
   }
 
   pressHeader() {
-    this.setState({mode: 'month'});
+    if (this.state.mode === 'date') {
+      this.setState({mode: 'month'});
+    }
+
+    if (this.state.mode === 'month') {
+      this.setState({mode: 'year'});
+    }
   }
 
   pressMonth(month) {
-    let newCurrentMonth = XDate(this.props.current).setMonth(month.id);
+    let newCurrentMonth = XDate(this.state.currentMonth).setMonth(month.id);
     this.setState({mode: 'date', currentMonth: parseDate(newCurrentMonth)});
     this.pressDay(xdateToData(newCurrentMonth));
+  }
+
+  pressYear(year) {
+    let newCurrentMonth = XDate(this.props.current).setYear(year);
+    this.setState({mode: 'month', currentMonth: parseDate(newCurrentMonth)});
   }
 
   renderDay(day, id) {
@@ -297,6 +312,17 @@ class Calendar extends Component {
       weeks.push(this.renderWeek(days.splice(0, 7), weeks.length));
     }
 
+    if (this.state.mode === 'year') {
+      return (
+        <YearList
+          theme={this.props.theme}
+          selectedDate={this.props.current}
+          onPressYear={this.pressYear}
+        />
+      );
+    }
+
+
     if (this.state.mode === 'month') {
       return (
         <MonthList
@@ -332,7 +358,7 @@ class Calendar extends Component {
           ref={c => this.header = c}
           style={this.props.headerStyle}
           theme={this.props.theme}
-          hideArrows={this.props.hideArrows}
+          hideArrows={this.props.hideArrows || this.state.mode !== 'date'}
           month={this.state.currentMonth}
           addMonth={this.addMonth}
           showIndicator={indicator}
