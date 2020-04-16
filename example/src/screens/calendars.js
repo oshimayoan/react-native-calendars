@@ -10,12 +10,13 @@ export default class CalendarsScreen extends Component {
     super(props);
 
     this.state = {
+      currentDate: new Date(),
       selected: undefined
     };
   }
 
   onDayPress = (day) => {
-    this.setState({selected: day.dateString});
+    this.setState({currentDate: new Date(day.dateString), selected: day.dateString});
   }
 
   render() {
@@ -24,7 +25,7 @@ export default class CalendarsScreen extends Component {
         <Text style={styles.text}>Calendar with selectable date</Text>
         <Calendar
           testID={testIDs.calendars.FIRST}
-          current={'2020-02-02'}
+          current={this.state.currentDate}
           style={styles.calendar}
           hideExtraDays
           onDayPress={this.onDayPress}
@@ -36,6 +37,7 @@ export default class CalendarsScreen extends Component {
               selectedTextColor: 'red'
             }
           }}
+          theme={{selectedDayBackgroundColor: 'orange'}}
         />
 
         <Text style={styles.text}>Calendar with week numbers</Text>
