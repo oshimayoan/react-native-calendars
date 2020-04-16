@@ -23,6 +23,7 @@ class CalendarHeader extends Component {
     weekNumbers: PropTypes.bool,
     onPressArrowLeft: PropTypes.func,
     onPressArrowRight: PropTypes.func,
+    onPressHeader: PropTypes.func,
     disableArrowLeft: PropTypes.bool,
     disableArrowRight: PropTypes.bool,
     webAriaLevel: PropTypes.number
@@ -161,7 +162,7 @@ class CalendarHeader extends Component {
       >
         <View style={this.style.header}>
           {leftArrow}
-          <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity disabled={!this.props.onPressHeader} onPress={this.props.onPressHeader} style={{flexDirection: 'row'}}>
             <Text
               allowFontScaling={false}
               style={this.style.monthText}
@@ -171,7 +172,7 @@ class CalendarHeader extends Component {
               {this.props.month.toString(this.props.monthFormat)}
             </Text>
             {indicator}
-          </View>
+          </TouchableOpacity>
           {rightArrow}
         </View>
         {!this.props.hideDayNames &&
