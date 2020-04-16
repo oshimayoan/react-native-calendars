@@ -46,5 +46,12 @@ export default function shouldComponentUpdate(nextProps, nextState) {
       field: 'current'
     };
   }
+
+  if (nextState.mode !== this.state.mode) {
+    shouldUpdate = {
+      update: true,
+      field: 'current'
+    };
+  }
   return shouldUpdate.update;
 }

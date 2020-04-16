@@ -12,6 +12,7 @@ import MultiDotDay from './day/multi-dot';
 import MultiPeriodDay from './day/multi-period';
 import SingleDay from './day/custom';
 import CalendarHeader from './header';
+import MonthList from './month';
 import shouldComponentUpdate from './updater';
 import {SELECT_DATE_SLOT} from '../testIDs';
 
@@ -92,13 +93,16 @@ class Calendar extends Component {
 
     this.style = styleConstructor(this.props.theme);
     this.state = {
-      currentMonth: props.current ? parseDate(props.current) : XDate()
+      currentMonth: props.current ? parseDate(props.current) : XDate(),
+      mode: 'date'
     };
 
     this.updateMonth = this.updateMonth.bind(this);
     this.addMonth = this.addMonth.bind(this);
     this.pressDay = this.pressDay.bind(this);
     this.longPressDay = this.longPressDay.bind(this);
+    this.pressHeader = this.pressHeader.bind(this);
+    this.pressMonth = this.pressMonth.bind(this);
     this.shouldComponentUpdate = shouldComponentUpdate;
   }
 
@@ -146,6 +150,16 @@ class Calendar extends Component {
 
   addMonth(count) {
     this.updateMonth(this.state.currentMonth.clone().addMonths(count, true));
+  }
+
+  pressHeader() {
+    this.setState({mode: 'month'});
+  }
+
+  pressMonth(month) {
+    let newCurrentMonth = XDate(this.props.current).setMonth(month.id);
+    this.setState({mode: 'date', currentMonth: parseDate(newCurrentMonth)});
+    this.pressDay(xdateToData(newCurrentMonth));
   }
 
   renderDay(day, id) {
@@ -276,13 +290,27 @@ class Calendar extends Component {
     return (<View style={this.style.week} key={id}>{week}</View>);
   }
 
-  render() {
+  renderContent() {
     const days = dateutils.page(this.state.currentMonth, this.props.firstDay);
     const weeks = [];
     while (days.length) {
       weeks.push(this.renderWeek(days.splice(0, 7), weeks.length));
     }
 
+    if (this.state.mode === 'month') {
+      return (
+        <MonthList
+          theme={this.props.theme}
+          selectedDate={this.state.currentMonth}
+          onPressMonth={this.pressMonth}
+        />
+      );
+    }
+
+    return <View style={this.style.monthView}>{weeks}</View>;
+  }
+
+  render() {
     let indicator;
     const current = parseDate(this.props.current);
     if (current) {
@@ -311,15 +339,16 @@ class Calendar extends Component {
           firstDay={this.props.firstDay}
           renderArrow={this.props.renderArrow}
           monthFormat={this.props.monthFormat}
-          hideDayNames={this.props.hideDayNames}
+          hideDayNames={this.props.hideDayNames || this.state.mode !== 'date'}
           weekNumbers={this.props.showWeekNumbers}
           onPressArrowLeft={this.props.onPressArrowLeft}
           onPressArrowRight={this.props.onPressArrowRight}
+          onPressHeader={this.pressHeader}
           webAriaLevel={this.props.webAriaLevel}
           disableArrowLeft={this.props.disableArrowLeft}
           disableArrowRight={this.props.disableArrowRight}
         />
-        <View style={this.style.monthView}>{weeks}</View>
+        {this.renderContent()}
       </View>);
   }
 }
