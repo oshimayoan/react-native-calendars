@@ -318,6 +318,7 @@ class Calendar extends Component {
           theme={this.props.theme}
           selectedDate={this.props.current}
           onPressYear={this.pressYear}
+          renderArrow={this.props.renderArrow}
         />
       );
     }

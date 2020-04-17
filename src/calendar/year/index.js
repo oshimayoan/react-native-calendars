@@ -41,7 +41,11 @@ function YearList(props) {
           onPress={pressLeft}
           style={styles.arrow}
         >
-          <Image source={require('../img/previous.png')}/>
+          {
+            props.renderArrow
+              ? props.renderArrow('left')
+              : <Image source={require('../img/previous.png')}/>
+          }
         </TouchableOpacity>
         <View style={styles.headerTextWrapper}>
           <Text style={styles.headerText}>
@@ -52,7 +56,11 @@ function YearList(props) {
           onPress={pressRight}
           style={styles.arrow}
         >
-          <Image source={require('../img/next.png')}/>
+          {
+            props.renderArrow
+              ? props.renderArrow('right')
+              : <Image source={require('../img/next.png')}/>
+          }
         </TouchableOpacity>
       </View>
       <View style={styles.row}>
@@ -103,7 +111,9 @@ YearList.propTypes = {
   // Current selected date, month, and year 
   selectedDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
   // Handler which gets executed on month press
-  onPressYear: PropTypes.func
+  onPressYear: PropTypes.func,
+  // Render a custom arrow component based on the direction ('left' | 'right)
+  renderArrow: PropTypes.func
 };
 
 export default YearList;
