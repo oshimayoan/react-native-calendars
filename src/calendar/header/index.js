@@ -26,11 +26,13 @@ class CalendarHeader extends Component {
     onPressHeader: PropTypes.func,
     disableArrowLeft: PropTypes.bool,
     disableArrowRight: PropTypes.bool,
-    webAriaLevel: PropTypes.number
+    webAriaLevel: PropTypes.number,
+    mode: PropTypes.string
   };
 
   static defaultProps = {
     monthFormat: 'MMMM yyyy',
+    yearFormat: 'yyyy',
     webAriaLevel: 1
   };
 
@@ -70,6 +72,12 @@ class CalendarHeader extends Component {
     if (nextProps.monthFormat !== this.props.monthFormat) {
       return true;
     }
+    if (nextProps.yearFormat !== this.props.yearFormat) {
+      return true;
+    }
+    if (nextProps.mode !== this.props.mode) {
+      return true;
+    }
     if (nextProps.renderArrow !== this.props.renderArrow) {
       return true;
     }
@@ -103,6 +111,7 @@ class CalendarHeader extends Component {
     let rightArrow = <View/>;
     let weekDaysNames = weekDayNames(this.props.firstDay);
     const {testID} = this.props;
+    let headerDisabled = !this.props.onPressHeader || this.props.mode === 'year';
 
     if (!this.props.hideArrows) {
       leftArrow = (
@@ -162,15 +171,32 @@ class CalendarHeader extends Component {
       >
         <View style={this.style.header}>
           {leftArrow}
-          <TouchableOpacity disabled={!this.props.onPressHeader} onPress={this.props.onPressHeader} style={{flexDirection: 'row'}}>
+          <TouchableOpacity 
+            disabled={headerDisabled} 
+            onPress={this.props.onPressHeader} 
+            style={this.style.touchableHeader}
+          >
             <Text
               allowFontScaling={false}
               style={this.style.monthText}
               {...webProps}
               testID={testID ? `${HEADER_MONTH_NAME}-${testID}`: HEADER_MONTH_NAME}
             >
-              {this.props.month.toString(this.props.monthFormat)}
+              {
+                this.props.month.toString(
+                  this.props.mode === 'year' 
+                    ? this.props.yearFormat 
+                    : this.props.monthFormat
+                )
+              }
             </Text>
+            {
+              this.props.mode !== 'year' && 
+                <Image 
+                  source={require('../img/down.png')} 
+                  style={this.style.downArrow}
+                />
+            }
             {indicator}
           </TouchableOpacity>
           {rightArrow}
