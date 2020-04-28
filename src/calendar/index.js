@@ -384,6 +384,7 @@ class Calendar extends Component {
           webAriaLevel={this.props.webAriaLevel}
           disableArrowLeft={this.props.disableArrowLeft}
           disableArrowRight={this.props.disableArrowRight}
+          mode={this.state.mode}
         />
         {this.renderContent()}
       </View>);

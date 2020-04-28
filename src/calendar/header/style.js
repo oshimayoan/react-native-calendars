@@ -14,12 +14,20 @@ export default function(theme={}) {
       marginTop: 6,
       alignItems: 'center'
     },
+    touchableHeader: {
+      flexDirection: 'row', 
+      alignItems: 'center'
+    },
     monthText: {
       fontSize: appStyle.textMonthFontSize,
       fontFamily: appStyle.textMonthFontFamily,
       fontWeight: appStyle.textMonthFontWeight,
       color: appStyle.monthTextColor,
       margin: 10
+    },
+    downArrow: {
+      width: 24,
+      height: 24
     },
     arrow: {
       padding: 10,
